@@ -9,6 +9,7 @@ import ContentWrapper from "../../components/contentWrapper/ContentWrapper";
 import MovieCard from "../../components/movieCard/MovieCard";
 import Spinner from "../../components/spinner/Spinner";
 import noResults from "../../assets/no-results.png";
+import Img from "../../components/lazyLoadImage/Img";
 
 const SearchResult = () => {
   const [data, setData] = useState(null);
@@ -31,9 +32,12 @@ const SearchResult = () => {
     fetchDataFromApi(`/search/multi?query=${query}&page=${pageNum}`).then(
       res => {
         if (data?.results) {
-          setData({
-            ...data,
-            results: [...data?.results, ...res.results],
+          setData(prev => {
+            let update = JSON.parse(JSON.stringify(prev));
+            return {
+              ...update,
+              results: [...update?.results, ...res.results],
+            };
           });
         } else {
           setData(res);
@@ -76,7 +80,9 @@ const SearchResult = () => {
               </InfiniteScroll>
             </>
           ) : (
-            <span className="resultNotFound">Sorry, Results not found!</span>
+            <div className="resultNotFound">
+              <img src={noResults} height={"60%"} width={"50%"} />
+            </div>
           )}
         </ContentWrapper>
       )}
